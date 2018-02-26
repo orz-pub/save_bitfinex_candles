@@ -1,5 +1,5 @@
 # 개요
-- [Bitfinex](https://www.bitfinex.com/) 의 특정통화의 캔들(candle)을 DB(MySQL)에 저장
+- [Bitfinex](https://www.bitfinex.com/) 특정통화의 캔들(candle)을 DB(MySQL)에 저장
   - https://docs.bitfinex.com/v2/reference#rest-public-candles
   - 시가, 종가, 저가, 고가, 거래량 (open, close, low, high, volume)
 - DB가 비어있지 않으면, 마지막 캔들부터 이어서 저장
