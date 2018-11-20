@@ -10,7 +10,7 @@
 - MySQL 5.6.37
 
 # 실행 인자
-### `통화타입 캔들타입 디비테이블명 [로그레벨]`
+### `통화타입 캔들타입 디비명.테이블명 [로그레벨]`
 - 비트코인의 달러 1분 캔들을 `candle_btcusd_1m` 테이블에 저장
   - `python save_bitfinex_candles.py tBTCUSD 1m candle_btcusd_1m`
 - 통화타입
@@ -26,15 +26,5 @@
 
 # 저장 테이블 스키마
 ```
-CREATE TABLE `candle_btcusd_1h` (
-  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `start_timestamp` TIMESTAMP NOT NULL,
-  `open` DOUBLE NOT NULL,
-  `high` DOUBLE NOT NULL,
-  `low` DOUBLE NOT NULL,
-  `close` DOUBLE NOT NULL,
-  `volume` DOUBLE NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `unq_start_timestamp` (`start_timestamp`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+CREATE TABLE `candle_btc` (  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,  `open` double NOT NULL,  `high` double NOT NULL,  `low` double NOT NULL,  `close` double NOT NULL,  `volume` double NOT NULL,  PRIMARY KEY (`id`),  UNIQUE KEY `unq_timestamp` (`timestamp`)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
 ```

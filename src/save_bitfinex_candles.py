@@ -80,7 +80,6 @@ class SaveBitfinexCandles:
                                                port=self.db_info['port'],
                                                user=self.db_info['user'],
                                                password=self.db_info['password'],
-                                               db=self.db_info['db'],
                                                charset='utf8',
                                                cursorclass=pymysql.cursors.DictCursor)
 
@@ -104,14 +103,15 @@ class SaveBitfinexCandles:
             except Exception as e:
                 self.logger.error(e)
             finally:
-                self.conn_db.close()
+                if self.conn_db:
+                    self.conn_db.close()
                 self.conn_db = None
                 time.sleep(self.sec_work_interval)
 
 
     def get_last_candle_date_in_db(self):
         with self.conn_db.cursor() as cursor:
-            select_query =  "SELECT start_timestamp AS t " + \
+            select_query =  "SELECT `timestamp` AS t " + \
                             "FROM {} ".format(self.db_table_name) + \
                             "ORDER BY id DESC LIMIT 1"
             cursor.execute(select_query)
@@ -173,7 +173,7 @@ class SaveBitfinexCandles:
                     "?start={}&end={}&sort=1&limit={}".format(start_timestamp, end_timestamp, self.LIMIT_CANDLES)
         self.logger.debug(url)
 
-        response = requests.get(url)
+        response = requests.get(url, verify=False)
         if (response.status_code != 200):
             self.logger.error("url: {}".format(url))
             self.logger.error("status_code: {}".format(response.status_code))
@@ -186,7 +186,7 @@ class SaveBitfinexCandles:
 
 
     def save_db(self, candles):
-        query = "INSERT INTO {}(`start_timestamp`, `open`, `high`, `low`, `close`, `volume`) ".format(self.db_table_name) + \
+        query = "INSERT INTO {}(`timestamp`, `open`, `high`, `low`, `close`, `volume`) ".format(self.db_table_name) + \
                 'VALUES '
 
         query_value = ''
@@ -220,16 +220,15 @@ def main(argv):
     db_info = {
             'host': 'localhost',
             'port': 3306,
-            'user': 'user',
-            'password': 'password',
-            'db': 'candle'
+            'user': 'root',
+            'password': ''
         }
     ''' ###### configurations. ###### '''
 
     n_arg = 4
 
     if len(argv) < n_arg:
-        print("usage: {} {} {} {}".format(os.path.basename(__file__), 'currency', 'candle_time', 'db_table_name', '[loglevel]'))
+        print("usage: {} {} {} {}".format(os.path.basename(__file__), 'currency', 'candle_time', 'db_name.table_name', '[loglevel]'))
         print("  currency: tBTCUSD, tETHUSD ...")
         print('    Trading pairs symbols are formed prepending a "t" before the pair (i.e tBTCUSD, tETHUSD).')
         print("  candle_time: 1m, 5m, 15m, 30m, 1h, 3h, 6h, 12h, 1D, 7D, 14D, 1M")
